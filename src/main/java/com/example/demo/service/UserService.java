@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.entity.ApiResponse;
+import com.example.demo.exception.ServerErrorException;
 import com.example.demo.jwt.JwtProvider;
 import com.example.demo.dto.LoginDto;
 import com.example.demo.dto.SignUpDto;
@@ -9,7 +11,9 @@ import com.example.demo.entity.User;
 import com.example.demo.exception.NotFoundException;
 import com.example.demo.repository.RefreshTokenRepository;
 import com.example.demo.repository.UserRepository;
+import com.example.demo.security.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +33,7 @@ public class UserService {
     private final JwtProvider jwtProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public Long getUserId(HttpServletRequest httpServletRequest ){
+    public Long getUserId(HttpServletRequest httpServletRequest){
         return Long.valueOf(String.valueOf(httpServletRequest.getAttribute("id")));
     }
 
@@ -47,7 +51,6 @@ public class UserService {
             return 0L;
         }
         return optionalUser.get().getId();
-
     }
 
 
@@ -58,6 +61,28 @@ public class UserService {
                 .username(signUpDto.getUsername())
                 .password(signUpDto.getPassword())
                 .name(signUpDto.getName())
+                .userRole("ROLE_USER")
+                .build();
+
+        userRepository.save(user);
+        Optional<User> optionalUser = userRepository.findByUsername(signUpDto.getUsername());
+        if(optionalUser.isEmpty()) {
+            throw new NotFoundException();
+        }
+
+        //유저 세부내역 등록
+
+        return optionalUser.get().getId();
+    }
+
+    public Long signupAdmin(SignUpDto signUpDto){
+        signUpDto.setPassword((passwordEncoder.encode(signUpDto.getPassword())));
+
+        User user = User.builder()
+                .username(signUpDto.getUsername())
+                .password(signUpDto.getPassword())
+                .name(signUpDto.getName())
+                .userRole("ROLE_ADMIN")
                 .build();
 
         userRepository.save(user);
@@ -78,7 +103,7 @@ public class UserService {
         if(optionalUser.isPresent()) {
             User user = optionalUser.get();
             if(passwordEncoder.matches(loginDto.getPassword(), user.getPassword())) {
-                String token = jwtProvider.createRefreshToken();
+                String token = jwtProvider.createRefreshToken(user.getUsername());
                 RefreshToken refreshToken = RefreshToken.builder()
                         .user(user)
                         .token(token)
@@ -89,7 +114,7 @@ public class UserService {
                 return UserInfoWithToken.builder()
                         .id(user.getId())
                         .username(user.getUsername())
-                        .token(jwtProvider.createToken(loginDto.getUsername()))
+                        .token(jwtProvider.createAllToken(loginDto.getUsername()))
                         .userRole(user.getUserRole())
                         .build();
             }
@@ -98,6 +123,18 @@ public class UserService {
         return UserInfoWithToken.builder()
                 .id(0L)
                 .build();
+    }
+
+    @SneakyThrows
+    public User findNowLoginUser(){
+
+        String username = SecurityUtil.getCurrentUsername().orElse(null);
+
+        if(username == null){
+            throw new ServerErrorException();
+        }
+
+        return userRepository.findByUsername(username).get();
     }
 
 

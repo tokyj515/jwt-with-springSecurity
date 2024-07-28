@@ -1,7 +1,7 @@
 package com.example.demo.security;
 
+import com.example.demo.entity.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tripyle.common.model.dto.HttpRes;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -24,7 +24,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         httpServletResponse.setContentType("application/json");
         httpServletResponse.setCharacterEncoding("utf-8");
 //        HttpRes<String> httpRes = new HttpRes<>(HttpStatus.UNAUTHORIZED.value(), "인증에 실패하였습니다.");
-        HttpRes<String> httpRes = new HttpRes<>(HttpStatus.FORBIDDEN.value(), "권한이 존재하지 않습니다.");
+        ApiResponse<String> httpRes = new ApiResponse<>("권한이 존재하지 않습니다.");
         httpServletResponse.getWriter().write(objectMapper.writeValueAsString(httpRes));
     }
 }

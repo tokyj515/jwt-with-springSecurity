@@ -1,7 +1,7 @@
 package com.example.demo.security;
 
+import com.example.demo.entity.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tripyle.common.model.dto.HttpRes;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -22,7 +22,7 @@ public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
         httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
         httpServletResponse.setContentType("application/json");
         httpServletResponse.setCharacterEncoding("utf-8");
-        HttpRes<String> httpRes = new HttpRes<>(HttpStatus.UNAUTHORIZED.value(), "인증에 실패하였습니다.");
+        ApiResponse<String> httpRes = new ApiResponse<>("인증에 실패하였습니다.");
         httpServletResponse.getWriter().write(objectMapper.writeValueAsString(httpRes));
     }
 }

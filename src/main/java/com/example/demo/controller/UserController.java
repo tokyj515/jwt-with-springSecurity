@@ -3,12 +3,12 @@ package com.example.demo.controller;
 import com.example.demo.dto.LoginDto;
 import com.example.demo.dto.SignUpDto;
 import com.example.demo.dto.UserInfoWithToken;
+import com.example.demo.entity.ApiResponse;
+import com.example.demo.entity.User;
 import com.example.demo.service.UserService;
+import io.swagger.annotations.Api;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RequiredArgsConstructor
@@ -19,17 +19,21 @@ public class UserController {
     private final UserService userService;
 
 
+    @GetMapping("/test")
+    public String test(){
+        return "test";
+    }
+
+
     @PostMapping("/signup")
-    public Long signup(@RequestBody SignUpDto signUpDto){
-        Long userId = userService.signup(signUpDto);
-        return userId;
+    public ApiResponse<Long> signup(@RequestBody SignUpDto signUpDto){
+        return new ApiResponse<>(userService.signup(signUpDto));
     }
 
 
     @PostMapping("/login")
-    public UserInfoWithToken login(@RequestBody LoginDto loginDto){
-        UserInfoWithToken result = userService.login(loginDto);
-        return result;
+    public ApiResponse<UserInfoWithToken> login(@RequestBody LoginDto loginDto){
+        return new ApiResponse<>(userService.login(loginDto));
     }
 
 

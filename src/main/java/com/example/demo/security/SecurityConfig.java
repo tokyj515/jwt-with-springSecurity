@@ -60,9 +60,6 @@ public class SecurityConfig {
                 .antMatchers("/v3/api-docs").permitAll()
                 // H2 Console 권한 해제
                 .antMatchers("/h2-console/**").permitAll()
-                // URI에 s1이 들어가면 JWT 검증
-                .antMatchers("/s1/**").authenticated()
-                .antMatchers("/s1/m/**").hasRole("ADMIN")
                 // 여기는 JWT 검증 안함
                 .antMatchers("/u/**").permitAll()
                 .antMatchers("/oauth/kakao", "/oauth/kakao/login").permitAll()

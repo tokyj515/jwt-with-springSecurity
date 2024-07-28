@@ -1,5 +1,6 @@
 package com.example.demo.entity;
 
+import com.example.demo.entity.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.Where;
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
-@Table(name = "user")
+@Table(name = "`user`")
 //@Where(clause = "delete_yn = 0")
 public class User extends BaseTimeEntity {
 
