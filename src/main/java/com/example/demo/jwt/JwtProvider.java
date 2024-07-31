@@ -3,6 +3,7 @@ package com.example.demo.jwt;
 
 
 import com.example.demo.dto.Token;
+import com.example.demo.repository.UserRepository;
 import io.jsonwebtoken.*;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Component;
 import java.util.Base64;
 import java.util.Date;
 
+import static java.util.Objects.isNull;
+
 @RequiredArgsConstructor
 @Component
 public class JwtProvider {
@@ -32,7 +35,7 @@ public class JwtProvider {
     private long refreshTokenValidTime = 30 * 24 * 60 * 60 * 1000L;
 
     private final UserDetailsService userDetailsService;
-
+    private final UserRepository userRepository;
 
 
 
@@ -110,12 +113,21 @@ public class JwtProvider {
 
     // Authentication: 스프링 시큐리티에서 사용자의 인증 및 권한 정보를 나타내는 인터페이스
     // 이 객체를 사용하여 현재 사용자가 누구인지, 사용자가 인증되었는지, 사용자가 어떤 권한을 가지고 있는지 등을 관리
+//    public Authentication getAuthentication(String token) {
+//        validationAuthorizationHeader(token);
+//        String availableToken = extractToken(token);
+//        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUsername(availableToken));
+//        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+//    }
+
     public Authentication getAuthentication(String token) {
-        validationAuthorizationHeader(token);
-        String availableToken = extractToken(token);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUsername(availableToken));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(token));
+        if(isNull(userDetails)) {
+            return null;
+        }
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
+
 
     /**
      * 3. 회원 정보 추출
@@ -140,6 +152,22 @@ public class JwtProvider {
             return username;
         }
         return username;
+    }
+
+
+    public Long getUserId(String token){
+        Long userId;
+        String username;
+        try {
+            username = Jwts.parser().setSigningKey(accessSecretKey).parseClaimsJws(token).getBody().getSubject();
+            userId = userRepository.findByUsername(username).get().getId();
+        }
+        catch(ExpiredJwtException e) {
+            username = e.getClaims().getSubject();
+            userId = userRepository.findByUsername(username).get().getId();
+            return userId;
+        }
+        return userId;
     }
 
 
@@ -170,6 +198,7 @@ public class JwtProvider {
      * */
 
     private void validationAuthorizationHeader(String header) {
+        System.out.println("header: "+ header);
         if (header == null || !header.startsWith("Bearer ")) {
             throw new IllegalArgumentException();
         }

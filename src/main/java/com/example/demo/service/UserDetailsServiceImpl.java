@@ -22,15 +22,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
 
 
-    public UserDetails loadUserByUsername(String id) {
-        RoleDto roleDto = getUserRoleById(Long.valueOf(id));
+//    public UserDetails loadUserByUsername(String id) {
+//        RoleDto roleDto = getUserRoleById(Long.valueOf(id));
+//        return new UserDetailsImpl(roleDto);
+//    }
+
+    public UserDetails loadUserByUsername(String username) {
+        RoleDto roleDto = getUserRoleById(username);
         return new UserDetailsImpl(roleDto);
     }
 
-    public RoleDto getUserRoleById(Long id) {
+    public RoleDto getUserRoleById(String username) {
         User user;
         try {
-            user = userRepository.findById(id).get();
+            user = userRepository.findByUsername(username).get();
         }
         catch(NoSuchElementException e) {
             throw new BadRequestException("존재하지 않는 유저입니다.");
@@ -38,7 +43,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         List<String> userRole = new ArrayList<>();
         userRole.add(user.getUserRole());
         return RoleDto.builder()
-                .id(id)
+                .id(user.getId())
                 .password(user.getPassword())
                 .roles(userRole)
                 .build();
