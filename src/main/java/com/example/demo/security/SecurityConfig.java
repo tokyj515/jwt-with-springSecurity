@@ -61,8 +61,8 @@ public class SecurityConfig {
                 // H2 Console 권한 해제
                 .antMatchers("/h2-console/**").permitAll()
                 // 여기는 JWT 검증 안함
-                .antMatchers("/u/**").permitAll()
-                .antMatchers("/oauth/kakao", "/oauth/kakao/login").permitAll()
+//                .antMatchers("/u/**").permitAll()
+//                .antMatchers("/oauth/kakao", "/oauth/kakao/login").permitAll()
                 .antMatchers("/now/user").hasRole("USER")
                 .antMatchers("/now/admin").hasRole("ADMIN")
                 .and()

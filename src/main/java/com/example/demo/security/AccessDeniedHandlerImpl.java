@@ -23,7 +23,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
         httpServletResponse.setStatus(HttpStatus.FORBIDDEN.value());
         httpServletResponse.setContentType("application/json");
         httpServletResponse.setCharacterEncoding("utf-8");
-        ApiResponse<String> httpRes = new ApiResponse<>(HttpStatus.UNAUTHORIZED.value(), "인증에 실패하였습니다.");
+        ApiResponse<String> httpRes = new ApiResponse<>(HttpStatus.FORBIDDEN.value(), "인증에 실패하였습니다.");
 //        ApiResponse<String> httpRes = new ApiResponse<>("권한이 존재하지 않습니다.");
         httpServletResponse.getWriter().write(objectMapper.writeValueAsString(httpRes));
     }
