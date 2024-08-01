@@ -49,10 +49,15 @@ public class UserController {
     }
 
 
-    @GetMapping("/now")
-    public ApiResponse<String> now(){
+    @GetMapping("/now/user")
+    public ApiResponse<String> nowUser(){
         return new ApiResponse<>(SecurityUtil.getCurrentUsername().get());
     }
 
+
+    @GetMapping("/now/admin")
+    public ApiResponse<String> nowAdmin(){
+        return new ApiResponse<>(SecurityUtil.getCurrentUsername().get());
+    }
 
 }

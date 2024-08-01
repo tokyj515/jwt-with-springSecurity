@@ -125,6 +125,8 @@ public class JwtProvider {
         if(isNull(userDetails)) {
             return null;
         }
+        // userDetail은 userDetails을 구현한 userDetailsImpl 객체
+
         return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
     }
 

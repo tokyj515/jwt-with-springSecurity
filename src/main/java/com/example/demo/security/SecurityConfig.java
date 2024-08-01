@@ -63,6 +63,8 @@ public class SecurityConfig {
                 // 여기는 JWT 검증 안함
                 .antMatchers("/u/**").permitAll()
                 .antMatchers("/oauth/kakao", "/oauth/kakao/login").permitAll()
+                .antMatchers("/now/user").hasRole("USER")
+                .antMatchers("/now/admin").hasRole("ADMIN")
                 .and()
                 .cors()
                 .and()

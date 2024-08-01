@@ -14,11 +14,11 @@ public class ApiResponse<T> {
     private T data;
 
 
-    //오류일 경우
-//    public ApiResponse(int code, String message) {
-//        this.code = code;
-//        this.message = message;
-//   }
+//    오류일 경우
+    public ApiResponse(int code, String message) {
+        this.code = code;
+        this.message = message;
+   }
 
 
     //성공일 경우
